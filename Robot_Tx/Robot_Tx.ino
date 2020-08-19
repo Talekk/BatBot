@@ -48,7 +48,7 @@ void setup()
   radio.setDataRate(RF24_250KBPS);
   Serial.println("Data rate: 250kbps");
   // Set address
-  radio.openReadingPipe(1, address);
+  radio.openWritingPipe(address);
   Serial.print("Address set");
 
   // Set channel values to "middle" of 0-255
