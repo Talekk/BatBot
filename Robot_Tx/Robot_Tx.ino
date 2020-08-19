@@ -1,6 +1,6 @@
 /**
  * August 11, 2020
- * Battle Bots Radio Reciever
+ * Battle Bot Radio Reciever
  * Gareth Koch
  * 
  * nRF24 Wiring

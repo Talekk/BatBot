@@ -1,6 +1,6 @@
 /**
    August 15, 2020
-   Battle Bots Radio Reciever
+   Battle Bot Radio Reciever
    Gareth Koch
 
    nRF24 Wiring
@@ -72,7 +72,7 @@ void setup()
   Serial.println("Data rate: 250kbps");
   // Set address
   radio.openReadingPipe(1, address);
-  Serial.print("Address set");
+  Serial.println("Address set");
   // Set radio to be receiver
   radio.startListening();
 
@@ -107,11 +107,6 @@ void loop() {
     // Actually move
     control(joystick.x, joystick.y);
   }
-  if (!radio.available()) {
-    Serial.println("No signal");
-    halt();
-    delay(2000);
-  }
 }
 
 
@@ -140,7 +135,7 @@ void control (int x, int y) {
       lSpeed = fwSpeed - map(y, 0, 120, fwSpeed, 0);
     }
   }
-  /*
+  
   // Test motor input/output
   Serial.print("x: ");
   Serial.print(x);
@@ -153,7 +148,7 @@ void control (int x, int y) {
   Serial.print(" ");
   Serial.print("R: ");
   Serial.println(rSpeed);
-  */
+  
   // Process final "speed" values to movement
   trackMove(lSpeed, rSpeed);
 }
