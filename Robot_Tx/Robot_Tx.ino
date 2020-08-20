@@ -1,23 +1,23 @@
 /**
- * August 11, 2020
- * Battle Bot Radio Reciever
- * Gareth Koch
- * 
- * nRF24 Wiring
- * GND  -----  GND
- * VCC  ----- 3.3V
- * CE   -----    8
- * CSN  -----    9
- * SCK  -----   13
- * MOSI -----   11
- * MISO -----   12
- * 
- * Joystick Wiring
- * GND  -----  GND
- * VCC  -----  +5V
- * VRX  -----   A0
- * VRY  -----   A1
- */
+   August 11, 2020
+   Battle Bot Radio Reciever
+   Gareth Koch
+
+   nRF24 Wiring
+   GND  -----  GND
+   VCC  ----- 3.3V
+   CE   -----    8
+   CSN  -----    9
+   SCK  -----   13
+   MOSI -----   11
+   MISO -----   12
+
+   Joystick Wiring
+   GND  -----  GND
+   VCC  -----  +5V
+   VRX  -----   A0
+   VRY  -----   A1
+*/
 
 #include <SPI.h>
 #include <nRF24L01.h>
@@ -40,7 +40,7 @@ Joystick joystick;
 void setup()
 {
   Serial.begin(9600);
-  
+
   // Start radio
   radio.begin();
   Serial.println("Radio begin");
@@ -62,12 +62,13 @@ void loop()
   joystick.y = map (analogRead(A1), 0, 1023, 0, 255);
 
   radio.write(&joystick, sizeof(Joystick));
-  Serial.print("x: ");
-  Serial.print(joystick.x);
-  Serial.print(" y: ");
-  Serial.print(joystick.y);
-  Serial.print(" A0: ");
+  Serial.print("A0: ");
   Serial.print(analogRead(A0));
+  Serial.print(" x: ");
+  Serial.print(joystick.x);
   Serial.print(" A1: ");
-  Serial.println(analogRead(A1));
+  Serial.print(analogRead(A1));
+  Serial.print(" y: ");
+  Serial.println(joystick.y);
+
 }
