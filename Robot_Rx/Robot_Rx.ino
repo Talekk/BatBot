@@ -1,5 +1,5 @@
 /**
-   August 15, 2020
+   August 24, 2020
    Battle Bot Radio Reciever
    Gareth Koch
 
@@ -123,7 +123,7 @@ void control (int x, int y) {
     rSpeed = 0;
   // Turn in place if no forward velocity
   } else if (isCentered(x)) {
-    lSpeed = map(y, 0, 255, 255, -255);
+    lSpeed = map(y, 0, 255, -255, 255);
     rSpeed = - lSpeed;
   // Scale forward velocity of right and left motors relative to y axis
   } else {
