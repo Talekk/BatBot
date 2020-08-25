@@ -129,10 +129,10 @@ void control (int x, int y) {
   } else {
     if (y < 120) {
       // left turn
-      rSpeed = fwSpeed - map(y, 135, 255, 0, fwSpeed);
+      lSpeed = fwSpeed + map(y, 135, 255, 0, fwSpeed);
     }
     else if (y > 135) {
-      lSpeed = fwSpeed - map(y, 0, 120, fwSpeed, 0);
+      rSpeed = fwSpeed + map(y, 0, 120, fwSpeed, 0);
     }
   }
   
