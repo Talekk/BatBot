@@ -1,6 +1,6 @@
 /**
-   August 11, 2020
-   Battle Bot Radio Reciever
+   August 28, 2020
+   Battle Bots Radio Reciever
    Gareth Koch
 
    nRF24 Wiring
@@ -23,7 +23,9 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
-const byte address[6] = {'T', 'A', 'L', 'E', 'K', 'K'};
+// Set address for radio
+// This must be the same for both the transmitter and receiver
+const byte address[6] = {'P', 'U', 'R', 'P', 'L', 'E'};
 
 // Create radio and set CE and CSE pins to 8 and 9 respectively
 RF24 radio(8, 9);
@@ -32,6 +34,7 @@ struct Joystick
 {
   byte x;
   byte y;
+  byte servo;
 };
 
 // Variable of above struct
@@ -60,6 +63,7 @@ void loop()
 {
   joystick.x = map (analogRead(A0), 0, 1023, 0, 255);
   joystick.y = map (analogRead(A1), 0, 1023, 0, 255);
+  joystick.servo = map (analogRead(A2), 0, 1023, 0, 225);
 
   radio.write(&joystick, sizeof(Joystick));
   Serial.print("A0: ");
@@ -69,6 +73,8 @@ void loop()
   Serial.print(" A1: ");
   Serial.print(analogRead(A1));
   Serial.print(" y: ");
-  Serial.println(joystick.y);
-
+  Serial.print(joystick.y);
+  Serial.print(analogRead(A2));
+  Serial.print(" servo: ");
+  Serial.println(joystick.servo);
 }

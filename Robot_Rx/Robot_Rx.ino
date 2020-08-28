@@ -1,5 +1,5 @@
 /**
-   August 24, 2020
+   August 28, 2020
    Battle Bot Radio Reciever
    Gareth Koch
 
@@ -28,6 +28,7 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <Servo.h>
 
 // Define left motor pins
 #define Len 10
@@ -39,9 +40,12 @@
 #define R1 4
 #define R2 5
 
+//Define servo pins
+#define Servo1 2
+
 // Set address for radio
 // This must be the same for both the transmitter and receiver
-const byte address[6] = {'T', 'A', 'L', 'E', 'K', 'K'};
+const byte address[6] = {'P', 'U', 'R', 'P', 'L', 'E'};
 
 // Create radio and set CE and CSE pins to 8 and 9 respectively
 RF24 radio(8, 9);
@@ -51,14 +55,19 @@ struct Joystick
 {
   byte x;
   byte y;
+  byte servo;
 };
+
 // Variable of above struct
 Joystick joystick;
 
-// Check if a joystick axis is in the neutral position
-bool isCentered(int value) {
-  return (value > 120 && value < 135);
-}
+//Set up servo
+Servo servo1;
+int servoPos = 90;
+int prevPos = 90;
+
+int timer;
+int lsatUpdate;
 
 void setup()
 {
@@ -106,9 +115,17 @@ void loop() {
 
     // Actually move
     control(joystick.x, joystick.y);
+    // Control actuator servo
+    // servoControl(joystick.servo);
+    // Use this instead for a continuous servo
+    continuousServoControl(joystick.servo);
   }
 }
 
+// Check if a joystick axis is in the neutral position
+bool isCentered(int value) {
+  return (value > 120 && value < 135);
+}
 
 void control (int x, int y) {
   // Define forward velocity in terms of x axis
@@ -121,11 +138,11 @@ void control (int x, int y) {
   if (isCentered(x) && isCentered(y)) {
     lSpeed = 0;
     rSpeed = 0;
-  // Turn in place if no forward velocity
+    // Turn in place if no forward velocity
   } else if (isCentered(x)) {
     lSpeed = map(y, 0, 255, -255, 255);
     rSpeed = - lSpeed;
-  // Scale forward velocity of right and left motors relative to y axis
+    // Scale forward velocity of right and left motors relative to y axis
   } else {
     if (y < 120) {
       // left turn
@@ -135,20 +152,22 @@ void control (int x, int y) {
       rSpeed = fwSpeed + map(y, 0, 120, fwSpeed, 0);
     }
   }
-  
-  // Test motor input/output
-  Serial.print("x: ");
-  Serial.print(x);
-  Serial.print(" ");
-  Serial.print("y: ");
-  Serial.print(y);
-  Serial.print(" ");
-  Serial.print("L: ");
-  Serial.print(lSpeed);
-  Serial.print(" ");
-  Serial.print("R: ");
-  Serial.println(rSpeed);
-  
+
+  /*
+    // Test motor input/output
+    Serial.print("x: ");
+    Serial.print(x);
+    Serial.print(" ");
+    Serial.print("y: ");
+    Serial.print(y);
+    Serial.print(" ");
+    Serial.print("L: ");
+    Serial.print(lSpeed);
+    Serial.print(" ");
+    Serial.print("R: ");
+    Serial.println(rSpeed);
+  */
+
   // Process final "speed" values to movement
   trackMove(lSpeed, rSpeed);
 }
@@ -195,4 +214,54 @@ void halt() {
   digitalWrite(R1, LOW);
   digitalWrite(R2, LOW);
   analogWrite(Ren, 0);
+}
+
+void servoControl(int dServo) {
+  // raise servo while joystick up
+  if (dServo > 199 && servoPos < 159) {
+    servo1.attach(Servo1);
+    servoPos += 2;
+    servo1.write(servoPos);
+    delay(10);
+    // lower servo while joystick down
+  } else if (dServo < 55 && servoPos > 21) {
+    servo1.attach(Servo1);
+    servoPos -= 2;
+    servo1.write(servoPos);
+    delay(10);
+    // stop servo if not being used
+  } else {
+    servo1.detach();
+  }
+
+  // Test servo input/output
+  prevPos = servo1.read();
+  Serial.print("control: ");
+  Serial.print(dServo);
+  Serial.print(" assigned position: ");
+  Serial.print(servoPos);
+  Serial.print(" read position: ");
+  Serial.println(prevPos);
+}
+
+void continuousServoControl(int dServo) {
+  // raise servo while joystick up
+  if (dServo > 199) {
+    servo1.attach(Servo1);
+    servoPos = 0;
+    servo1.write(servoPos);
+    // lower servo while joystick down
+  } else if (dServo < 55) {
+    servo1.attach(Servo1);
+    servoPos = 180;
+    servo1.write(servoPos);
+    // stop servo if not being used
+  } else {
+    servo1.detach();
+  }
+  // Test servo direction
+  Serial.print("control: ");
+  Serial.print(dServo);
+  Serial.print(" cw/ccw ");
+  Serial.println(servoPos);
 }
